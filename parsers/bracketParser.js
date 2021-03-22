@@ -9,6 +9,7 @@ module.exports = (wikitext, pos, bracket, setpos, callproc, matchLenCallback = n
             cnt--;
             i += bracket.close.length - 1;
         } else if(!bracket.multiline && wikitext[i] === '\n')
+            // 개행을 지원하지 않는 괄호 속에서 개행 발견 시 종료
             return null;
         
         if(cnt == 0 && done) {

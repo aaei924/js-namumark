@@ -7,6 +7,7 @@ let defaultOptions = {
     wiki: {
         exists: (title, isImage) => {return true;},
         includeParserOptions: {},
+        // URL 처리
         resolveUrl: (target, type) => {
             switch(type) {
                 case 'wiki':
@@ -37,9 +38,11 @@ function HTMLRenderer(_options) {
         wasPreMono = false;
     function appendResult(value) {
         if(isFootnoteNow) {
+            // 각주[각주번호] 배열에 추가
             footnotes[footnotes.length - 1].value += typeof value === "string" ? value : value.toString();
             return;
         } else if(isHeadingNow) {
+            // 목차[목차번호] 배열에 추가
             headings[headings.length - 1].value += typeof value === "string" ? value : value.toString();
         }
         if(resultTemp.length === 0)
@@ -55,14 +58,17 @@ function HTMLRenderer(_options) {
         }
     }
     function ObjToCssString(obj) {
+        // 배열에 들어있던 값 CSS 스트링으로 변환
         let styleString = "";
         for(let name in obj) {
             styleString += `${name}:${obj[name]}; `;
         }
         return styleString.substring(0, styleString.length - 1);
+        // 변수에 스타일 스트링 전체 포함
     }
     let _ht = this;
     this.processToken = (i) => {
+        // HTML 태그로 변환
         //console.log(i);
         switch (i.name) {
             case 'blockquote-start':
@@ -144,6 +150,7 @@ function HTMLRenderer(_options) {
                 break;
             case 'macro':
                 switch (i.macroName) {
+                    // 매크로 처리
                     case 'br':
                         appendResult('<br>');
                         break;
@@ -272,6 +279,7 @@ function HTMLRenderer(_options) {
                 appendResult(`<img src="${i.target}" ${i.styleOptions ? "style=\"" + ObjToCssString(i.styleOptions) + '"' : ''}/>`)
                 break;
             case 'comment':
+                // 주석은 뷰어에서 표시할 내용 없으므로 넘어감
                 break; // 신경쓸 필요 X
             case 'heading-start':
                 if(lastHeadingLevel < i.level)
@@ -312,6 +320,7 @@ function HTMLRenderer(_options) {
     function finalLoop(callback) {
         result = '';
         if(footnotes.length > 0) {
+             // 각주 존재할 경우 맨 마지막에 출력하기
             _ht.processToken({name: 'macro', macroName: '각주'});
         }
         async.map(resultTemp, (item, mapcb) => {
@@ -332,6 +341,7 @@ function HTMLRenderer(_options) {
                             macroContent += `<div class="wiki-toc-item wiki-toc-item-indent-${curHeading.level}"><a href="#heading-${j+1}">${hLevels[curHeading.level]}.</a> ${curHeading.value}</div>`;
                             lastLevel = curHeading.level;
                         }
+                        // 문단이 존재할 때에만 목차 생성하기
                         macroContent += '</div></div>';
                         return mapcb(null, macroContent);
                     case 'include':

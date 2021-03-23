@@ -21,7 +21,8 @@ function Namumark(articleName, _options) {
         renderer = null;
         //raw 내용을 wikitext 변수에 저장
     function doParse(callback) {
-        // v => i = v 는 i값을 v로 지정함
+        // v => i = v 함수 설명
+        // setpos(v) 함수인데 여기에 있는 i값을 v값으로 설정해준다.
         renderer = rendererOptions ? new rendererClass(rendererOptions) : new rendererClass();
         let line = '',
             now = '',

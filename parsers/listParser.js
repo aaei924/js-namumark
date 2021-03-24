@@ -8,6 +8,7 @@ function finishTokens(tokens) {
         prevWasList = false,
         prevListType;
     for (let i = 0; i < tokens.length; i++) {
+        // tokens는 배열이다.
         let curToken = tokens[i];
         let curWasList = curToken.name === 'list-item-temp';
         if (curWasList != prevWasList) {

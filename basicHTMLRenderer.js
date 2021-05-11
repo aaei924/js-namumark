@@ -37,6 +37,7 @@ function HTMLRenderer(_options) {
         lastListOrdered = [],
         wasPreMono = false;
     function appendResult(value) {
+        // resultTemp 배열에 나무마크 배열 파싱 결과를 집어넣음
         if(isFootnoteNow) {
             // 각주[각주번호] 배열에 추가
             footnotes[footnotes.length - 1].value += typeof value === "string" ? value : value.toString();
@@ -318,12 +319,19 @@ function HTMLRenderer(_options) {
         }
     }
     function finalLoop(callback) {
+        // 최종실행 함수
         result = '';
         if(footnotes.length > 0) {
              // 각주 존재할 경우 맨 마지막에 출력하기
             _ht.processToken({name: 'macro', macroName: '각주'});
         }
         async.map(resultTemp, (item, mapcb) => {
+            /* 
+            [NOTE] Async map(array | Iterable | AsyncIterable | Object coll. iteratee, [callback])
+            coll 배열의 각 값을 iteratee 함수를 통해 새 배열을 만든다.
+            모든 처리가 끝나거나 오류가 발생하면 콜백 함수를 호출한다.
+            콜백의 인수는 error과 결과값.
+            */
             if(typeof item === "string")
                 mapcb(null, item);
             else if(item.name === "macro") {

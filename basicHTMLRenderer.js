@@ -47,11 +47,14 @@ function HTMLRenderer(_options) {
             headings[headings.length - 1].value += typeof value === "string" ? value : value.toString();
         }
         if(resultTemp.length === 0)
+            // resultTemp가 비어있을 때
             resultTemp.push(value);
         else {
             let isArgumentString = typeof value === "string";
             let isLastItemString = typeof resultTemp[resultTemp.length - 1] === "string";
             if(isArgumentString && isLastItemString) {
+                  // value 변수가 string이고 resultTemp의 마지막 요소가 string일 때
+                  // = 그냥 HTML 태그
                 resultTemp[resultTemp.length - 1] += value;
             } else {
                 resultTemp.push(value);
@@ -318,6 +321,7 @@ function HTMLRenderer(_options) {
                 break;
         }
     }
+    
     function finalLoop(callback) {
         // 최종실행 함수
         result = '';
@@ -331,10 +335,14 @@ function HTMLRenderer(_options) {
             coll 배열의 각 값을 iteratee 함수를 통해 새 배열을 만든다.
             모든 처리가 끝나거나 오류가 발생하면 콜백 함수를 호출한다.
             콜백의 인수는 error과 결과값.
+            
+            + mapcb 함수로 콜백함수 호출
             */
             if(typeof item === "string")
                 mapcb(null, item);
+              // 그냥 HTML 태그이면 콜백 호출
             else if(item.name === "macro") {
+                  // 매크로일때
                 switch(item.macroName) {
                     case 'toc':
                     case 'tableofcontents':
@@ -380,13 +388,13 @@ function HTMLRenderer(_options) {
             for(let i = 0; i < finalFragments.length; i++) {
                 result += finalFragments[i];
             }
-            callback(null, result);
+            callback(result);
+              // 아래있는 콜백함수 적용
         });
     }
     this.getResult = (c) => {
-        finalLoop((err, html) => {
-            if (err)
-                return c(err);
+        finalLoop((html) => {
+              // 이 함수 말하는거다
             c(null, {html: html, categories: categories});
         })
     }
